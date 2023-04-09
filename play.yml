@@ -1,0 +1,54 @@
+---
+- name: Install docker on RHEL
+  hosts: localhost
+  become: yes
+  roles:
+    - docker_install
+  tasks:
+    - name: создание контейнеров с jenkins и nexus
+      shell: docker-compose up -d 
+      args:
+        chdir: ./jenkins_nexus
+
+    - name: смена прав на /var/run/docker.sock
+      file:
+        path: /var/run/docker.sock
+        state: file
+        mode: 0666
+
+
+    - name: Wait for Nexus to start
+      uri:
+        url: http://localhost:8081
+        return_content: no
+        status_code: 200
+      register: nexus_ping
+      retries: 30
+      delay: 10
+      until: nexus_ping.status == 200
+ 
+    - name: первоначальная настройка nexus (первоначальный вход admin, создание пользователя jenkins, группы docker-group, репозитория для docker)
+      script: ./settings_nexus.sh
+
+    - name: ждем когда запустится jenkins
+      uri:
+        url: http://localhost:8080/login
+        return_content: no
+        status_code: 200
+        validate_certs: no
+      register: jenkins_ping
+      retries: 30
+      delay: 10
+      until: jenkins_ping.status == 200
+
+    - name: получение пароля для первого входа в jenkins
+      shell: docker exec jenkins sh -c 'cat /var/jenkins_home/secrets/initialAdminPassword'
+      register: password_content
+
+    - name: пароль записываем в переменную
+      set_fact:
+        my_hosts: "{{ password_content.stdout }}"
+
+    - name: сообщение пользователю
+      debug:
+        msg: "зайдите пожалуйста по адресу http://127.0.0.1:8080/ и введите следующий пароль для первоначального входа>>>> {{ password_content.stdout }} <<<<<<<<<<, после чего установить рекомендованные плагины"
