@@ -12,10 +12,13 @@ services:
       - "jenkins_home:/var/jenkins_home"
       - "./jenkins-cli.jar:/var/jenkins_home/jenkins-cli.jar"
       - "/var/run/docker.sock:/var/run/docker.sock"
-#      - "/usr/bin/docker:/usr/bin/docker"
     networks:
-      jenkins_nexus:
-       
+      - jenkins_nexus
+#      jenkins_nexus:
+    environment:
+      TZ: "/etc/timezone"
+#      JENKINS_OPTS: "--httpListenAddress=0.0.0.0 --httpPort=8080"       
+
   nexus:
     image: sonatype/nexus3:3.51.0
     container_name: nexus
@@ -30,16 +33,21 @@ services:
     environment:
       TZ: "/etc/timezone"
 
+  nginx:
+    container_name: nginx
+    restart: unless-stopped
+    image: nginx:latest
+    ports:
+        - 80:80
+        - 443:443
+    volumes:
+      - ./ssl_data/:/etc/nginx/conf.d
+      - ./nginx/example.conf:/etc/nginx/conf.d/dva.conf
+    networks:
+      - jenkins_nexus
+
 networks:
   jenkins_nexus:
-#    network_mode: host
-#    driver: bridge
-#    internal: false
-#    ipam:
-#      driver: default
-#      config:
-#        - subnet: 100.127.255.0/24
-
 
 volumes:
   jenkins_home:

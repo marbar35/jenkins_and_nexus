@@ -5,6 +5,16 @@
   roles:
     - docker_install
   tasks:
+
+    - name: генерация сертификатов openssl
+      shell: openssl req -subj '/CN=localhost' -x509 -newkey rsa:4096 -nodes -keyout ./jenkins_nexus/ssl_data/key.pem -out ./jenkins_nexus/ssl_data/cert.pem -days 365
+
+    - name: добавление строки для jenkins и nexus в хост файл
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        line: 127.0.0.1 jenkins.example.com nexus.example.com
+        create: yes
+
     - name: создание контейнеров с jenkins и nexus
       shell: docker-compose up -d 
       args:
@@ -50,4 +60,4 @@
 
     - name: сообщение пользователю
       debug:
-        msg: "зайдите пожалуйста по адресу http://127.0.0.1:8080/ и введите следующий пароль для первоначального входа>>>> {{ password_content.stdout }} <<<<<<<<<<, после чего установить рекомендованные плагины"
+        msg: "зайдите пожалуйста по адресу https://jenkins.example.com/ и введите следующий пароль для первоначального входа>>>> {{ password_content.stdout }} <<<<<<<<<<, после чего установите рекомендованные плагины"
