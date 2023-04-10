@@ -1,6 +1,3 @@
-...
-nexus:
-  hosts:
-    nexus:
-      ansible_port: 8081
-      ansible_host: 127.0.0.1
+[local]
+
+localhost              ansible_connection=local

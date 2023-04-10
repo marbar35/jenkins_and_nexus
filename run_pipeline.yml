@@ -1,0 +1,19 @@
+---
+- name: 
+  hosts: localhost
+  become: yes
+  tasks:
+   - name: запуск пайплайна
+     command: docker exec jenkins java -jar /var/jenkins_home/jenkins-cli.jar -auth "{{ user}}":"{{ password }}" -s http://127.0.0.1:8080/ build "{{ jobs }}"
+
+   - name: просмотр лога выполнения пайплайна
+     command: docker exec jenkins java -jar /var/jenkins_home/jenkins-cli.jar -auth "{{ user}}":"{{ password }}" -s http://127.0.0.1:8080/ console "{{ jobs }}"
+     register: command_output
+
+   - name: вывод лога перенаправляем в переменную и потом в файл
+     set_fact:
+       my_hosts: "{{ command_output.stdout }}"
+   - copy: 
+       content: "{{ command_output.stdout }}" 
+       dest: "check_result.log"
+

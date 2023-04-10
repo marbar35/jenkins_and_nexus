@@ -125,3 +125,10 @@ then
 else
   echo "Провал*********************************пользователь docker НЕ создан**************************************************************"
 fi
+
+
+
+
+
+
+curl -XPUT -H "Content-Type: application/json" -u "$USERNAME:$PASSWORDNEW"  --data-raw '["NexusAuthenticatingRealm", "NexusAuthorizingRealm", "DockerToken"]' http://127.0.0.1:8081/service/rest/v1/security/realms/active

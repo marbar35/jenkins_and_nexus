@@ -16,7 +16,6 @@
         state: file
         mode: 0666
 
-
     - name: Wait for Nexus to start
       uri:
         url: http://localhost:8081
@@ -27,7 +26,7 @@
       delay: 10
       until: nexus_ping.status == 200
  
-    - name: первоначальная настройка nexus (первоначальный вход admin, создание пользователя jenkins, группы docker-group, репозитория для docker)
+    - name: первоначальная настройка nexus (первоначальный вход admin, создание пользователя jenkins, группы docker-group, репозитория для docker, активирование DockerToken)
       script: ./settings_nexus.sh
 
     - name: ждем когда запустится jenkins
