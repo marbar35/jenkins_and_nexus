@@ -1,10 +1,24 @@
----
-    - name: Install Docker
-      apt:
-        name: docker.io
-        state: present
+#---
+#    - name: Install Docker
+#      apt:
+#        name: docker.io
+#        state: present#
 
-    - name: Install docker-compose
-      apt:
-        name: docker-compose
-        state: present
+#    - name: Install docker-compose
+#      apt:
+#        name: docker-compose
+
+##    - name: установка, если apt
+##      apt:
+##        name: 
+##          - docker.io
+##          - docker-compose 
+##        state: present
+##      when: apt_check.rc == 0
+#        state: present
+---
+    - name: установка docker
+      package: name=docker.io
+    - name: установка docker-compose
+      package: name=docker-compose
+    
