@@ -1,11 +1,27 @@
 ---
-- name: Install docker on RHEL
-  hosts: localhost
+- name: настройка jenkins и nexus
+  hosts: all 
   become: yes
   roles:
     - docker_install
   tasks:
+    - name: проверка менеджера пакетов
+      command: which apt
+      register: apt_check
+      ignore_errors: true
 
+    - name: установка, если apt
+      apt:
+        name: openssl
+        state: present
+      when: apt_check.rc == 0
+
+    - name: установка, если yum
+      yum:
+        name: openssl
+        state: present
+      when: apt_check.rc != 0
+    
     - name: генерация сертификатов openssl
       shell: openssl req -subj '/CN=localhost' -x509 -newkey rsa:4096 -nodes -keyout ./jenkins_nexus/ssl_data/key.pem -out ./jenkins_nexus/ssl_data/cert.pem -days 365
 

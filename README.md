@@ -1,6 +1,6 @@
 1.
-ansible-playbook play.yml 
-
+ansible-playbook play.yml
+//ansible-playbook -i inventory -l 'local' play.yml
 на экране будет показан пароль для первоначального входа в jenkins, нужно ввести его пожалуйста по адресу https://jenkins.example.com , установить рекомендованные плагины и создать первоначального пользователя
 В корне лежит файл с именем Jenkinsfile , на основе него нужно создать:
   - Item - pipeline (напр., с названием s1)
