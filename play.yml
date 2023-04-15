@@ -42,7 +42,7 @@
         state: file
         mode: 0666
 
-    - name: Wait for Nexus to start
+    - name: ждем когда запустится nexus 
       uri:
         url: http://localhost:8081
         return_content: no
